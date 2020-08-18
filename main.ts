@@ -1,11 +1,14 @@
 namespace SpriteKind {
     export const Pared = SpriteKind.create()
     export const Pancarta = SpriteKind.create()
+    export const Premio = SpriteKind.create()
+    export const Premio1 = SpriteKind.create()
+    export const Premio2 = SpriteKind.create()
+    export const Premio3 = SpriteKind.create()
+    export const Premio4 = SpriteKind.create()
 }
 function Meta () {
-    info.stopCountdown()
-    tiempo = game.runtime()
-    cartel = sprites.create(img`
+    cartel2 = sprites.create(img`
         f f f f f 1 1 1 1 1 f f f f f f 
         f f f f f 1 1 1 1 1 f f f f f f 
         f f f f f 1 1 1 1 1 f f f f f f 
@@ -23,7 +26,7 @@ function Meta () {
         f f f f f 1 1 1 1 1 f f f f f f 
         f f f f f 1 1 1 1 1 f f f f f f 
         `, SpriteKind.Pancarta)
-    cartel.setPosition(3152, 56)
+    cartel2.setPosition(3152, 56)
     cartel2 = sprites.create(img`
         1 1 1 1 1 f f f f f 1 1 1 1 1 1 
         1 1 1 1 1 f f f f f 1 1 1 1 1 1 
@@ -181,6 +184,29 @@ function Genera_coches () {
             `, SpriteKind.Pared)
     }
 }
+function Coloca_obstaculos (nivel: number, indice: number) {
+    if (nivel == 1) {
+        x = randint(0, longitud_mapa)
+        obstaculo.setPosition(x, y[indice])
+    } else if (nivel == 2) {
+        x = randint(0, longitud_mapa / nivel - 100)
+        obstaculo.setPosition(x, y[indice])
+        x = randint(longitud_mapa / nivel + 100, longitud_mapa)
+        obstaculo.setPosition(x, y[indice])
+    } else if (nivel == 3) {
+        x = randint(0, Math.round(longitud_mapa / nivel) - 100)
+        obstaculo.setPosition(x, y[indice])
+        x = randint(Math.round(longitud_mapa / nivel) + 100, Math.round(longitud_mapa / nivel * 2) - 100)
+        obstaculo.setPosition(x, y[indice])
+        x = randint(Math.round(longitud_mapa / nivel * 2) + 100, longitud_mapa)
+        obstaculo.setPosition(x, y[indice])
+    }
+}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Premio3, function (sprite, otherSprite) {
+    music.baDing.play()
+    otherSprite.destroy(effects.starField, 100)
+    info.changeScoreBy(3)
+})
 controller.left.onEvent(ControllerButtonEvent.Pressed, function () {
     velocidad += -10
     azul.setVelocity(velocidad, 0)
@@ -236,30 +262,108 @@ controller.right.onEvent(ControllerButtonEvent.Pressed, function () {
     velocidad += 10
     azul.setVelocity(velocidad, 0)
 })
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Premio1, function (sprite, otherSprite) {
+    music.baDing.play()
+    otherSprite.destroy(effects.starField, 100)
+    info.changeScoreBy(1)
+})
 function Generar_obstaculos () {
     for (let index = 0; index < nivel; index++) {
         for (let index = 0; index <= y.length - 1; index++) {
             Genera_coches()
             tiles.placeOnRandomTile(obstaculo, sprites.vehicle.roadHorizontal)
+            Coloca_obstaculos(nivel, index)
+        }
+    }
+    if (nivel == 1) {
+        for (let index = 0; index <= y.length - 1; index++) {
+            monedas = sprites.create(img`
+                . . . b b b . . 
+                . . b 5 5 5 b . 
+                . b 5 d 3 d 5 b 
+                . b 5 1 5 3 5 b 
+                . c d 1 5 3 5 c 
+                . c d d 1 d 5 c 
+                . . f d d d f . 
+                . . . f f f . . 
+                `, SpriteKind.Premio1)
+            tiles.placeOnRandomTile(monedas, sprites.vehicle.roadHorizontal)
             x = randint(0, 3200)
-            obstaculo.setPosition(x, y[index])
+            monedas.setPosition(x, y[index])
+        }
+    } else if (nivel == 2) {
+        for (let index = 0; index <= y.length - 1; index++) {
+            estrella = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . 6 6 6 6 . . . . . . 
+                . . . . 6 6 6 5 5 6 6 6 . . . . 
+                . . . 7 7 7 7 6 6 6 6 6 6 . . . 
+                . . 6 7 7 7 7 8 8 8 1 1 6 6 . . 
+                . . 7 7 7 7 7 8 8 8 1 1 5 6 . . 
+                . 6 7 7 7 7 8 8 8 8 8 5 5 6 6 . 
+                . 6 7 7 7 8 8 8 6 6 6 6 5 6 6 . 
+                . 6 6 7 7 8 8 6 6 6 6 6 6 6 6 . 
+                . 6 8 7 7 8 8 6 6 6 6 6 6 6 6 . 
+                . . 6 8 7 7 8 6 6 6 6 6 8 6 . . 
+                . . 6 8 8 7 8 8 6 6 6 8 6 6 . . 
+                . . . 6 8 8 8 8 8 8 8 8 6 . . . 
+                . . . . 6 6 8 8 8 8 6 6 . . . . 
+                . . . . . . 6 6 6 6 . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Premio2)
+            tiles.placeOnRandomTile(estrella, sprites.vehicle.roadHorizontal)
+            x = randint(0, 3200)
+            estrella.setPosition(x, y[index])
+        }
+    } else if (nivel == 3) {
+        for (let index = 0; index <= y.length - 1; index++) {
+            bola = sprites.create(img`
+                . . . . . . . . . . . . . . . . 
+                . . . . . . 4 4 4 4 . . . . . . 
+                . . . . 4 4 4 5 5 4 4 4 . . . . 
+                . . . 3 3 3 3 4 4 4 4 4 4 . . . 
+                . . 4 3 3 3 3 2 2 2 1 1 4 4 . . 
+                . . 3 3 3 3 3 2 2 2 1 1 5 4 . . 
+                . 4 3 3 3 3 2 2 2 2 2 5 5 4 4 . 
+                . 4 3 3 3 2 2 2 4 4 4 4 5 4 4 . 
+                . 4 4 3 3 2 2 4 4 4 4 4 4 4 4 . 
+                . 4 2 3 3 2 2 4 4 4 4 4 4 4 4 . 
+                . . 4 2 3 3 2 4 4 4 4 4 2 4 . . 
+                . . 4 2 2 3 2 2 4 4 4 2 4 4 . . 
+                . . . 4 2 2 2 2 2 2 2 2 4 . . . 
+                . . . . 4 4 2 2 2 2 4 4 . . . . 
+                . . . . . . 4 4 4 4 . . . . . . 
+                . . . . . . . . . . . . . . . . 
+                `, SpriteKind.Premio3)
+            tiles.placeOnRandomTile(bola, sprites.vehicle.roadHorizontal)
+            x = randint(0, 3200)
+            bola.setPosition(x, y[index])
         }
     }
 }
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Pancarta, function (sprite, otherSprite) {
+    info.stopCountdown()
+    tiempo = game.runtime() / 1000
+    info.startCountdown(tiempo + 45)
     nivel += 1
     carretera = randint(0, 3)
     azul.setPosition(16, y[carretera])
     game.splash("Nivel : " + nivel, "" + nivel + " coches por vía.")
     Generar_obstaculos()
-    info.startCountdown(tiempo + 45)
+    info.changeLifeBy(1)
     azul.setVelocity(100, 0)
 })
-function Cambio_nivel () {
-	
-}
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Premio4, function (sprite, otherSprite) {
+    music.baDing.play()
+    otherSprite.destroy(effects.starField, 100)
+    info.changeScoreBy(4)
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Premio2, function (sprite, otherSprite) {
+    music.baDing.play()
+    otherSprite.destroy(effects.starField, 100)
+    info.changeScoreBy(2)
+})
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Pared, function (sprite, otherSprite) {
-    scene.cameraShake(4, 200)
     info.changeLifeBy(-1)
     if (info.life() == 0) {
         game.over(false, effects.starField)
@@ -269,14 +373,18 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Pared, function (sprite, otherSp
         azul.setPosition(16, y[carretera])
     }
 })
-let x = 0
+let tiempo = 0
+let bola: Sprite = null
+let estrella: Sprite = null
+let monedas: Sprite = null
 let energia2: Sprite = null
 let carretera = 0
+let x = 0
 let obstaculo: Sprite = null
 let coche = 0
-let cartel2: Sprite = null
 let cartel: Sprite = null
-let tiempo = 0
+let cartel2: Sprite = null
+let longitud_mapa = 0
 let nivel = 0
 let y: number[] = []
 let velocidad = 0
@@ -441,6 +549,7 @@ y = [56, 72, 88, 104]
 info.setScore(0)
 info.setLife(3)
 nivel = 1
+longitud_mapa = 3200
 Generar_obstaculos()
 Añadir_tiempo()
 Meta()
